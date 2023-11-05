@@ -15,7 +15,6 @@ fun main(args: Array<String>) {
 }
 
 val parsingManager = ParsingManager()
-val parser = JsonParser()
 
 @RestController
 class MessageController(repository: DoctorsRepository) {

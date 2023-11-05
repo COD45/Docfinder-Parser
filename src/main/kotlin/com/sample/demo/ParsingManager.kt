@@ -32,13 +32,6 @@ class ParsingManager {
     }
 
     fun downloadData() {
-//        val doc = repository.findByName("Dr. Helga Hahn")
-//
-//        println("ZIP: ${doc?.zip?:"NULL"}")
-//        return
-
-
-
         doctorsList.clear()
 
         val zips = listOf("1060",)
@@ -51,8 +44,6 @@ class ParsingManager {
                 downloadData(fow, it)
             }
         }
-
-
         persistDocs()
     }
 
@@ -101,10 +92,6 @@ class ParsingManager {
         doctorUrls.forEachIndexed { i, it ->
             doctorsList.add(parseDoctorData("$baseUrl$it", zipCode))
         }
-
-
-
-
     }
 
     fun getNextUrl(doc: Document): String? {

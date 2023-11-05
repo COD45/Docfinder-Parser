@@ -25,16 +25,23 @@ class ParsingManager {
     private fun persistDocs() {
         println("Writing ${doctorsList.size} docs to database")
         doctorsList.forEach { docData ->
-            println("Writing ${docData.name}")
+            val matchingEntries = repository.findAllByName(docData.name)
             val ent = docData.toEntity()
-            repository.save(ent)
+            if (!matchingEntries.contains(ent)) {
+                println("Writing ${docData.name}")
+                repository.save(ent)
+            }
         }
+        val all = repository.findAll()
+        println("DB Contains ${all.toList().size} entries")
     }
 
     fun downloadData() {
+//        check()
+//        return
         doctorsList.clear()
 
-        val zips = listOf("1060",)
+        val zips = listOf("1060","1050")
         fows.forEach { fow ->
             println("Getting all FOW: $fow")
 
@@ -45,6 +52,20 @@ class ParsingManager {
             }
         }
         persistDocs()
+    }
+
+    fun getByZip(zip: String?): List<DoctorEntity> {
+        return if (zip != null) {
+            repository.findAllByZip(zip).toList()
+        } else {
+            repository.findAll().toList()
+        }
+    }
+
+    fun check() {
+        repository.deleteAll()
+        val all = repository.findAll()
+        return
     }
 
     private fun downloadData(fow: String, zipCode: String) {

@@ -19,6 +19,8 @@ val parsingManager = ParsingManager()
 @RestController
 class MessageController(repository: DoctorsRepository) {
 
+	val checkToken = "DDoSisCoMiNg"
+
 	init {
 	    parsingManager.setRepo(repository)
 	}
@@ -27,10 +29,24 @@ class MessageController(repository: DoctorsRepository) {
 	fun index() = "Hello!"
 
 	@GetMapping("/parse")
-	fun parse(@RequestParam("name") name: String?): String {
+	fun parse(@RequestParam("token") token: String?): String {
+		if (token == checkToken) {
+			parsingManager.downloadData()
 
-		parsingManager.downloadData()
+			return "DONE"
+		} else {
+			return "ERROR"
+		}
+	}
 
-		return "DONE"
+	@GetMapping("/search")
+	fun search(@RequestParam("token") token: String?, zip: String?): String {
+		if (token == checkToken) {
+			val result = parsingManager.getByZip(zip)
+
+			return "FOUNG ${result.size} ENTRIES"
+		} else {
+			return "ERROR"
+		}
 	}
 }

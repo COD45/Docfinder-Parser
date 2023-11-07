@@ -23,17 +23,17 @@ class ParsingManager {
     val fows = listOf("zahnarzt",)
 
     private fun persistDocs() {
-        println("Writing ${doctorsList.size} docs to database")
+        appendLog("Writing ${doctorsList.size} docs to database")
         doctorsList.forEach { docData ->
             val matchingEntries = repository.findAllByName(docData.name)
             val ent = docData.toEntity()
             if (!matchingEntries.contains(ent)) {
-                println("Writing ${docData.name}")
+                appendLog("Writing ${docData.name}")
                 repository.save(ent)
             }
         }
         val all = repository.findAll()
-        println("DB Contains ${all.toList().size} entries")
+        appendLog("DB Contains ${all.toList().size} entries")
     }
 
     fun downloadData() {
@@ -43,10 +43,10 @@ class ParsingManager {
 
         val zips = listOf("1060","1050")
         fows.forEach { fow ->
-            println("Getting all FOW: $fow")
+            appendLog("Getting all FOW: $fow")
 
             zips.forEach {
-                println("Searching PLZ: $it")
+                appendLog("Searching PLZ: $it")
 
                 downloadData(fow, it)
             }
@@ -83,7 +83,7 @@ class ParsingManager {
             // SCAN PAGE
             // ADD EVERY DOCTOR URL TO [doctorUrls]
 
-            println("Processing: $next")
+            appendLog("Processing: $next")
 
             val searchRes = doc.select(".search-results").select("a[aria-label]")
 
@@ -98,7 +98,7 @@ class ParsingManager {
             // Load and parse HTML from next page
             doc = Jsoup.connect(path).get()
 
-            //println("DONE")
+            //appendLog("DONE")
             next = getNextUrl(doc)
         }
 
@@ -135,7 +135,7 @@ class ParsingManager {
 
     fun parseDoctorData(path: String, zip: String): DoctorData {
         val page = Jsoup.connect(path).get()
-        println("scanning $path")
+        appendLog("scanning $path")
         val data = DoctorData(
             name = page.select("h1").text(),
             fow = page.select("div.professions").select("span").first()?.text()?:"",

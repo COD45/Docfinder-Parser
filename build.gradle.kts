@@ -16,7 +16,7 @@ allOpen {
 }
 
 group = "com.sample"
-version = "0.0.1-SNAPSHOT"
+version = "parser9000-v0.2.1"
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17

@@ -10,9 +10,8 @@ class JsonParser {
 
     fun parse(): List<String> {
 
-
-
-        val file = File("src/main/kotlin/com/sample/demo/zipcodes.json")
+        val path = System.getenv("ZIP_FILE_NAME")
+        val file = File(path)
 
         val jsonString = file.inputStream().readBytes().toString(Charsets.UTF_8)
 

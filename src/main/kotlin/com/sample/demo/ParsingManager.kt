@@ -10,17 +10,19 @@ import java.net.URL
 
 class ParsingManager {
 
-    val baseUrl = "https://www.docfinder.at"
-    val doctorsList: MutableList<DoctorData> = mutableListOf()
+    private val baseUrl = "https://www.docfinder.at"
+    private val doctorsList: MutableList<DoctorData> = mutableListOf()
+    private val parser = JsonParser()
 
     lateinit var repository: DoctorsRepository
+
+    private val zips = parser.parse().toSet()
 
     fun setRepo(repo: DoctorsRepository) {
         repository = repo
     }
 
-//    val fows = listOf("zahnarzt", "praktischer-arzt", "hautarzt", "frauenarzt", "orthopaede", "augenarzt", "plastischer-chirurg", "apotheke")
-    val fows = listOf("zahnarzt",)
+    private val fows = listOf("zahnarzt", "praktischer-arzt", "hautarzt", "frauenarzt", "orthopaede", "augenarzt", "plastischer-chirurg", "apotheke")
 
     private fun persistDocs() {
         appendLog("Writing ${doctorsList.size} docs to database")
@@ -41,17 +43,17 @@ class ParsingManager {
 //        return
         doctorsList.clear()
 
-        val zips = listOf("1060","1050")
-        fows.forEach { fow ->
-            appendLog("Getting all FOW: $fow")
+        zips.forEach { zip ->
+            appendLog("Getting all ZIP: $zip")
+            fows.forEach {
+                appendLog("Searching FOW: $it")
 
-            zips.forEach {
-                appendLog("Searching PLZ: $it")
-
-                downloadData(fow, it)
+                downloadData(it, zip)
             }
+            persistDocs()
+            doctorsList.clear()
         }
-        persistDocs()
+        appendLog("SCAN COMPLETE!")
     }
 
     fun getByZip(zip: String?): List<DoctorEntity> {
@@ -110,16 +112,15 @@ class ParsingManager {
         }
 
         /*mod = doctorsList.size*/
-        doctorUrls.forEachIndexed { i, it ->
+        doctorUrls.forEach {
             doctorsList.add(parseDoctorData("$baseUrl$it", zipCode))
         }
     }
 
-    fun getNextUrl(doc: Document): String? {
-        val next: String? = doc
+    private fun getNextUrl(doc: Document): String? {
+        return doc
             .getElementsByClass("btn icon-right")
             .first()?.attr("href")
-        return next
     }
 
     /**
